@@ -12,6 +12,7 @@
         "project": [
           "tsconfig.json"
         ],
+        "tsconfigRootDir": ["__dirname"],
         "createDefaultProgram": true
       },
       "plugins": ["rxjs", "rxjs-angular"],
