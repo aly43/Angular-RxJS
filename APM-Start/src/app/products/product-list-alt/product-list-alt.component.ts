@@ -8,7 +8,7 @@ import { ProductService } from '../product.service';
 @Component({
   selector: 'pm-product-list',
   templateUrl: './product-list-alt.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush // needs to make errors emit (.next)
 })
 export class ProductListAltComponent {
   pageTitle = 'Products';
