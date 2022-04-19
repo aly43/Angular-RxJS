@@ -26,7 +26,7 @@ export class ProductListComponent {
   categorySelectedAction$ = this.categorySelectedSubject.asObservable(); // expose the subject as an observ'able
 
   products$ = combineLatest([ //combine action with data stream
-    this.productService.productsWithCategory$, //want the category string, not id
+    this.productService.productsWithAdd$, //want the category string, not id
     this.categorySelectedAction$
     .pipe(
       startWith(0) //initializes with number 0, same as behavior subject
@@ -93,7 +93,7 @@ export class ProductListComponent {
   // }
 
   onAdd(): void {
-    console.log('Not yet implemented');
+    this.productService.addProduct();
   }
 
   onSelected(categoryId: string): void {
