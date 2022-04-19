@@ -16,7 +16,7 @@ export class ProductListComponent{
   errorMessage = '';
   categories: ProductCategory[] = [];
 
-  products$: Observable<Product[]> | undefined = this.productService.products$
+  products$= this.productService.productsWithCategory$ //: Observable<Product[]> | undefined =
         .pipe(
           catchError(err => {
             this.errorMessage = err;
