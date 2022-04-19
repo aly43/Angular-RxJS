@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { catchError, combineLatest, map, Observable, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, map, Observable, tap, throwError } from 'rxjs';
 
 import { Product } from './product';
 import { ProductCategoryService } from '../product-categories/product-category.service';
@@ -40,8 +40,24 @@ export class ProductService {
     )
   )
 
+  private productSelectedSubject = new BehaviorSubject<number>(0);
+  productSelectedAction$ = this.productSelectedSubject.asObservable();
+
+  selectedProduct$ = combineLatest([
+    this.productsWithCategory$, //listens to products, with categories
+    this.productSelectedAction$ //watches if something is selected and emits when it is
+  ]).pipe(
+    map(([products, selectedProductId]) =>  //emits array of products and productid
+    products.find(product => product.id === selectedProductId) //find product that matches with id and send it back to subscriber
+    ),
+    tap(product => console.log('selectedProduct', product))
+  )
+
   constructor(private http: HttpClient, private productCategoryService: ProductCategoryService) { }
 
+  selectedProductChanged(selectedProductId: number): void {
+    this.productSelectedSubject.next(selectedProductId) //emit id to action stream
+  }
   // getProducts(): Observable<Product[]> {
   //   return this.http.get<Product[]>(this.productsUrl)
   //     .pipe(
