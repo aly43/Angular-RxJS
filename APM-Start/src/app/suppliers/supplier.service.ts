@@ -1,7 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { throwError, Observable, of, map, concatMap, tap, mergeMap } from 'rxjs';
+import {
+  throwError,
+  Observable,
+  of,
+  map,
+  concatMap,
+  tap,
+  mergeMap,
+  switchMap,
+} from 'rxjs';
 import { Supplier } from './supplier';
 
 @Injectable({
@@ -16,23 +25,36 @@ export class SupplierService {
     );
 
   suppliersWithConcatMap$ = of(1, 5, 8) //emits after each is completed, one at a time
-      .pipe( //pipe each id (one by one) through a set of operators
-        tap(id => console.log('concatMap source Observable', id)), //log id
-        concatMap(id => this.http.get<Supplier>(`${this.suppliersUrl}/${id}`)) //transform id's into new observables and then flatten for the output stream
-      )
+    .pipe(
+      //pipe each id (one by one) through a set of operators
+      tap((id) => console.log('concatMap source Observable', id)), //log id
+      concatMap((id) => this.http.get<Supplier>(`${this.suppliersUrl}/${id}`)) //transform id's into new observables and then flatten for the output stream
+    );
 
-      suppliersWithMergeMap$ = of(1, 5, 8) //emits in parallel
-      .pipe( //pipe each id (one by one) through a set of operators
-        tap(id => console.log('mergeMap source Observable', id)), //log id
-        mergeMap(id => this.http.get<Supplier>(`${this.suppliersUrl}/${id}`)) //transform id's into new observables and then flatten for the output stream
-      )
+  suppliersWithMergeMap$ = of(1, 5, 8) //emits in parallel
+    .pipe(
+      //pipe each id (one by one) through a set of operators
+      tap((id) => console.log('mergeMap source Observable', id)), //log id
+      mergeMap((id) => this.http.get<Supplier>(`${this.suppliersUrl}/${id}`)) //transform id's into new observables and then flatten for the output stream
+    );
 
+  suppliersWithSwitchMap$ = of(1, 5, 8) //emits in parallel
+    .pipe(
+      //pipe each id (one by one) through a set of operators
+      tap((id) => console.log('switchMap source Observable', id)), //log id
+      switchMap((id) => this.http.get<Supplier>(`${this.suppliersUrl}/${id}`)) //transform id's into new observables and then flatten for the output stream
+    );
   constructor(private http: HttpClient) {
     this.suppliersWithConcatMap$.subscribe(
       //o => o.subscribe( //using a nested subscription works, but makes code too complicated and bug prone
       (item) => console.log('concatMap result', item)
     );
-    this.suppliersWithMergeMap$.subscribe((item) => console.log('mergeMap result', item));
+    this.suppliersWithMergeMap$.subscribe((item) =>
+      console.log('mergeMap result', item)
+    );
+    this.suppliersWithSwitchMap$.subscribe((item) =>
+      console.log('switchMap result', item)
+    );
   }
 
   private handleError(err: HttpErrorResponse): Observable<never> {
