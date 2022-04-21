@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { BehaviorSubject, catchError, combineLatest, map, merge, Observable, scan, shareReplay, Subject, tap, throwError } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { BehaviorSubject, catchError, combineLatest, forkJoin, map, merge, Observable, of, scan, shareReplay, Subject, tap, throwError } from 'rxjs';
+import { filter, switchMap } from 'rxjs/operators';
 
 import { Product } from './product';
 import { ProductCategoryService } from '../product-categories/product-category.service';
 import { SupplierService } from '../suppliers/supplier.service';
+import { Supplier } from '../suppliers/supplier';
 
 @Injectable({
   providedIn: 'root'
@@ -56,15 +57,33 @@ export class ProductService {
     tap(product => console.log('selectedProduct', product)),
     shareReplay(1) //no additional logging, and brings out data much faster
   )
+//Get it all:
 
-  selectedProductSuppliers$ = combineLatest([
-    this.selectedProduct$,
-    this.supplierService.suppliers$
-  ]).pipe(
-    map(([selectedProduct, suppliers]) =>
-      suppliers.filter(supplier => selectedProduct?.supplierIds?.includes(supplier.id))
+  // selectedProductSuppliers$ = combineLatest([
+  //   this.selectedProduct$,
+  //   this.supplierService.suppliers$
+  // ]).pipe(
+  //   map(([selectedProduct, suppliers]) =>
+  //     suppliers.filter(supplier => selectedProduct?.supplierIds?.includes(supplier.id))
+  //   )
+  // )
+
+//JIT:
+
+  selectedProductSuppliers$ = this.selectedProduct$
+    .pipe(
+      filter(product => Boolean(product)),
+      switchMap(selectedProduct => { //retrieve suppliers for the correct product if user selects in quick succession
+        if(selectedProduct?.supplierIds) {
+          return forkJoin(selectedProduct.supplierIds.map(supplierId =>
+            this.http.get<Supplier>(`${this.suppliersUrl}/${supplierId}`)))
+        }
+        else {
+          return of([])
+        }
+      }),
+      tap(suppliers => console.log('product suppliers', JSON.stringify(suppliers)))
     )
-  )
 
   private productInsertedSubject = new Subject<Product>();
   productInsertedAction$ = this.productInsertedSubject.asObservable();
