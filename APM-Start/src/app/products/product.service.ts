@@ -5,6 +5,7 @@ import { BehaviorSubject, catchError, combineLatest, map, merge, Observable, sca
 
 import { Product } from './product';
 import { ProductCategoryService } from '../product-categories/product-category.service';
+import { SupplierService } from '../suppliers/supplier.service';
 
 @Injectable({
   providedIn: 'root'
@@ -71,7 +72,7 @@ export class ProductService {
     this.productInsertedSubject.next(newProduct) //call next on action stream to emit new product
   }
 
-  constructor(private http: HttpClient, private productCategoryService: ProductCategoryService) { }
+  constructor(private http: HttpClient, private productCategoryService: ProductCategoryService, private supplierService: SupplierService) { }
 
   selectedProductChanged(selectedProductId: number): void {
     this.productSelectedSubject.next(selectedProductId) //emit id to action stream
