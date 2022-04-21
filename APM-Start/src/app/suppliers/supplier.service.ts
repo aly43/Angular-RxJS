@@ -10,6 +10,8 @@ import {
   tap,
   mergeMap,
   switchMap,
+  shareReplay,
+  catchError,
 } from 'rxjs';
 import { Supplier } from './supplier';
 
@@ -18,6 +20,13 @@ import { Supplier } from './supplier';
 })
 export class SupplierService {
   suppliersUrl = 'api/suppliers';
+
+  suppliers$ = this.http.get<Supplier[]>(this.suppliersUrl) //get array of suppliers, http call, the response is set into a supplier array
+    .pipe( //pipe array of suppliers
+      tap(data => console.log('suppliers', JSON.stringify(data))), //tap each supplier
+      shareReplay(1), //cache data and catch errors
+      catchError(this.handleError)
+    )
 
   supplierWithMap$ = of(1, 5, 8) // mock list of supplier id's
     .pipe(
@@ -44,6 +53,7 @@ export class SupplierService {
       tap((id) => console.log('switchMap source Observable', id)), //log id
       switchMap((id) => this.http.get<Supplier>(`${this.suppliersUrl}/${id}`)) //transform id's into new observables and then flatten for the output stream
     );
+
   constructor(private http: HttpClient) {
     this.suppliersWithConcatMap$.subscribe(
       //o => o.subscribe( //using a nested subscription works, but makes code too complicated and bug prone
