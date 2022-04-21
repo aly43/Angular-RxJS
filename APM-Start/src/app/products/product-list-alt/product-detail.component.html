@@ -1,10 +1,12 @@
 <div class="card"
      *ngIf="product$ | async as product">
-  <div class="card-header">
-    {{ pageTitle }}
+  <div class="card-header"
+      *ngIf="vm$ | async as vm">
+    {{ vm.pageTitle }}
   </div>
 
   <div class="card-body">
+      <!-- *ngIf="vm$ | async as vm" : *ngIf="vm.product" -->
     <div class="row">
       <div class="col-md-2">Name:</div>
       <div class="col-md-6">{{ product.productName }}</div>

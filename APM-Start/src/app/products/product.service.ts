@@ -66,6 +66,23 @@ export class ProductService {
     )
   )
 
+  // //JIT:
+
+  // selectedProductSuppliers$ = this.selectedProduct$
+  //   .pipe(
+  //     filter(product => Boolean(product)),
+  //     switchMap(selectedProduct => { //retrieve suppliers for the correct product if user selects in quick succession
+  //       if(selectedProduct?.supplierIds) {
+  //         return forkJoin(selectedProduct.supplierIds.map(supplierId =>
+  //           this.http.get<Supplier>(`${this.suppliersUrl}/${supplierId}`)))
+  //       }
+  //       else {
+  //         return of([])
+  //       }
+  //     }),
+  //     tap(suppliers => console.log('product suppliers', JSON.stringify(suppliers)))
+  //   )
+
   private productInsertedSubject = new Subject<Product>();
   productInsertedAction$ = this.productInsertedSubject.asObservable();
 
