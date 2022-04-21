@@ -22,8 +22,8 @@ export class ProductService {
     //     ...product, //spread operator, copies products properties and values
     //     price: product.price ? product.price * 1.5 : 0,
     //     searchKey: [product.productName] //populate with product name,
-    //   } as Product))), //strong typing
-    tap(data => console.log('Products: ', JSON.stringify(data))),
+    ///   } as Product))), //strong typing
+    //tap(data => console.log('Products: ', JSON.stringify(data))),
     catchError(this.handleError)
   );
 
